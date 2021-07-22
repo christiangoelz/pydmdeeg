@@ -18,6 +18,7 @@ This package is still in progress. It will help to apply dmd to neurophysiologic
 
 [Open points: 
 - add tests 
+- add installation instructions etc.
 - add plotting (scalp maps)
 - add examples
 - show results of papers
