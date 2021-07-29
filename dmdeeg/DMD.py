@@ -18,7 +18,7 @@ from numpy.linalg import cond, eig, pinv, norm
 from scipy.linalg import svd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import optht
+from optht import optht
 
 class DMD: 
     """EEG signal decomposition using Dynamic Mode Decomposition (DMD).
