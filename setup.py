@@ -4,7 +4,7 @@ setup(
     name='pydmdeeg',
     version='0.1.0',    
     description='Dynamic mode decomposition applied to EEG data',
-    url='',
+    url='https://github.com/christiangoelz/pydmd',
     author='Christian Goelz',
     author_email='c.goelz@gmx.de',
     license='MIT',
