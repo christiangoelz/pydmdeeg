@@ -8,7 +8,7 @@ setup(
     author='Christian Goelz',
     author_email='c.goelz@gmx.de',
     license='MIT',
-    packages=['dmdeeg'],
+    packages=['pydmdeeg'],
     install_requires=[
         'optht',
  	'pandas',
