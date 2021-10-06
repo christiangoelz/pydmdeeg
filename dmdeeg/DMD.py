@@ -772,7 +772,7 @@ def _DMD_comp(XY, h, algorithm, truncation = False):
         
         # define how many modes to keep
         if truncation['method'] == 'optht':
-            r = optht(Xaug, sv=S, sigma=None, trace = False)
+            r = optht(Xaug, sv=S, sigma=None)
         elif truncation['method'] == 'cut':
             assert truncation['keep'] != None, 'Please specify how many SVD modes to keep when truncation is set to cut!'
             r = truncation['keep']
