@@ -1,11 +1,28 @@
-from setuptools import find_packages, setup
-setup(name="dmdeeg",
-      version="0.1.0",
-      description="Analyze EEG data with dynamic mode decomposition",
-      author="Christian Goelz",
-      author_email='c.goelz@gmx.de',
-      platforms=["any"],  # or more specific, e.g. "win32", "cygwin", "osx"
-      license="MIT",
-      url="http://github.com/christiangoelz/dmdeeg",
-      packages=find_packages(),
-      )
+from setuptools import setup
+
+setup(
+    name='pydmdeeg',
+    version='0.1.0',    
+    description='Dynamic mode decomposition applied to EEG data',
+    url='',
+    author='Christian Goelz',
+    author_email='c.goelz@gmx.de',
+    license='MIT',
+    packages=['dmdeeg'],
+    install_requires=[
+        'optht',
+ 	'pandas',
+        'seaborn',
+        'numpy',
+        'matplotlib',
+        'scipy'],
+    classifiers=[
+        'Development Status :: 1 - Planning',
+        'Intended Audience :: Science/Research',  
+        'Operating System :: POSIX :: Linux',        
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+    ],
+)
+
