@@ -25,8 +25,8 @@ class DMD:
 
     This object can be used to decompose EEG data to spatio-temporal coherent 
     patterns with DMD. Basically DMD is an algorithm that allows to approximate 
-    the relation of all signals in pairs of consecutive time instances of a 
-    arranged in matrix X, where n denotes sensors and m denotes measurement points.
+    the relation of all signals in pairs of consecutive time instances
+    arranged in matrix X of size n x m, where n denotes sensors and m denotes measurement points.
     Base
     
     Parameters
@@ -55,10 +55,10 @@ class DMD:
         The default is 'norm'.
     algorithm : str, {'exact', 'standard'}
         algorithm to use see [2] for details. The default is 'exact'.
-    truncation : bool, optional
-        use of SVD truncation in first step. If True hard threshiolding based on 
-        [3] and implemented with [4] is used. The default is False.
-        
+    truncation : dict, {'method': {'cut', 'optht'}, {keep: n}, optional
+        use of SVD truncation in first step.  If 'method' is 'optht' hard threshiolding based on 
+        [3] and implemented with [4] is used. If 'method':'cut' and 'keep':n n SVD modes are kept. 
+        The default is None.
 
     Attributes
     ----------
@@ -97,9 +97,9 @@ class DMD:
     $$$ PLOTING METHODS: $$$
     plot_statsCh(self):
         plot Channel statistics based on DMD.mode_stats() 
-    plot_frRPsi(self, labels = []:
+    plot_frRPsi(self, labels = []):
         plot DMD spectrim for each label 
-    plot_frRLam(self, labels = []:
+    plot_frRLam(self, labels = []):
         plot lambda spectrum for each label
     plot_ChAmpErr(self):
         plot Channel Amplitude and Error of Approximation based on DMD modes and 
@@ -123,7 +123,7 @@ class DMD:
             last access: 15.05.2020 under https://github.com/erichson/optht 
     """
     def __init__(self, X = None, y = None, channels = None, dt = None, stacking_factor = 0, win_size = 100, 
-                 overlap = 0, datascale = 'norm', algorithm = 'exact', truncation = False):
+                 overlap = 0, datascale = 'norm', algorithm = 'exact', truncation = {'method': None, 'keep': None}):
 
         
         #Check inputs
@@ -139,7 +139,6 @@ class DMD:
             raise ValueError('No channel information provided')
         
         #get data structure
-        
         n_chan = len(channels)
         chan_num = X.shape[1] if len(X.shape) ==3 else X.shape[0]
         if n_chan != chan_num:
@@ -149,7 +148,6 @@ class DMD:
         numws =  int(floor(len_trial-overlap)/(win_size-overlap))
                        
         #Define object vars
-
         self.X = X
         self.y = y
         self.dt = dt
@@ -168,7 +166,6 @@ class DMD:
                      'truncation' : truncation}
         
 
-    
     def DMD_win(self):
         """
         calculates DMD in windows defined in class with overlap defined in class
@@ -267,7 +264,7 @@ class DMD:
         data = np.c_[Psi, Amp]
         df = pd.DataFrame(columns = cols, data = data)
         df['Lambda'] = Lambda
-        df['Mu'] = MU
+        df['Mu'] = Mu
         df['win'] = Window
         df['trial'] = Trial
         df['label'] = Label
@@ -743,8 +740,8 @@ def _DMD_comp(XY, h, algorithm, truncation = False):
         the data to compute DMD 
     h: int 
         stacking factor for shift stacking 
-    truncation: bool 
-        defines wheater to truncate with hard thresholding 
+    truncation: dict 
+        defines wheater to truncate with hard thresholding
         
      
     Returns
@@ -771,8 +768,16 @@ def _DMD_comp(XY, h, algorithm, truncation = False):
     U = matrix(U)
     V = matrix(V.T)
     
-    if truncation == True:
-        r = optht(Xaug, sv=S, sigma=None, trace = False)
+    if truncation['method'] != None:
+        
+        # define how many modes to keep
+        if truncation['method'] == 'optht':
+            r = optht(Xaug, sv=S, sigma=None, trace = False)
+        elif truncation['method'] == 'cut':
+            assert truncation['keep'] != None, 'Please specify how many SVD modes to keep when truncation is set to cut!'
+            r = truncation['keep']
+
+        #keep r modes     
         U = U[:,:r]
         S = S[:r]
         V = V[:,:r]
