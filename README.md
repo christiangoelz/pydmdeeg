@@ -1,4 +1,4 @@
-# dmdeeg
+# pydmdeeg
 ## Decomposing eeg data with dynamic mode decomposition (dmd)
 
 This package is still in progress. It will help to apply dmd to neurophysiological data, with a focus on EEG data.
