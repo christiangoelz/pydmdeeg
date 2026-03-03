@@ -193,7 +193,15 @@ class DMD:
         -------
         self : DMD
             Returns self with results and AmpCh_Err attributes populated.
+
+        Raises
+        ------
+        ValueError
+            If X or y is None.
         """
+        if self.X is None or self.y is None:
+            raise ValueError("Data (X) and labels (y) must be provided before calling DMD_win")
+
         if not self.scaled:
             self._scale_input()
 
@@ -336,6 +344,9 @@ class DMD:
             Dictionary mapping frequency band strings to DataFrames
             with descriptive statistics.
         """
+        if self.y is None:
+            raise ValueError("Labels (y) must be provided")
+
         Stats: dict[str, pd.DataFrame] = {}
         if labels is None:
             labels = list(set(self.y))
@@ -366,6 +377,9 @@ class DMD:
         fig : Figure
             Matplotlib figure with mean, median, Q1, Q3 heatmaps.
         """
+        if self.Stats is None:
+            raise ValueError("Must call mode_stats() before plot_statsCH()")
+
         stats = self.Stats
         channels = self.info["channels"]
 
@@ -422,6 +436,11 @@ class DMD:
         fig : Figure
             Matplotlib figure with amplitude and error plots.
         """
+        if self.y is None:
+            raise ValueError("Labels (y) must be provided")
+        if self.AmpCh_Err is None:
+            raise ValueError("Must call DMD_win() before plot_ChAmpErr()")
+
         if labels is None:
             labels = list(set(self.y))
 
@@ -454,8 +473,8 @@ class DMD:
 
         # Subplot 2: FroErW
         ax2 = sns.lineplot(x=df.index, y="FroErW", data=df, color="b", ax=ax[0, 1])
-        mean = np.repeat(df["FroErW"].mean(), len(df))
-        df["mean"] = mean
+        mean_val: NDArray[np.floating[Any]] = np.repeat(df["FroErW"].mean(), len(df))
+        df["mean"] = mean_val
         sns.lineplot(x=df.index, y="mean", data=df, color="r", ax=ax[0, 1])
         ax2.set_xlabel("Time window")
 
@@ -490,6 +509,11 @@ class DMD:
         g : FacetGrid
             Seaborn FacetGrid with power spectrum plots.
         """
+        if self.y is None:
+            raise ValueError("Labels (y) must be provided")
+        if self.results is None:
+            raise ValueError("Must call DMD_win() before plot_frRPsi()")
+
         if labels is None:
             labels = list(set(self.y))
 
@@ -531,6 +555,11 @@ class DMD:
         g : FacetGrid
             Seaborn FacetGrid with eigenvalue plots.
         """
+        if self.y is None:
+            raise ValueError("Labels (y) must be provided")
+        if self.results is None:
+            raise ValueError("Must call DMD_win() before plot_frRLam()")
+
         df = self.results
 
         if labels is None:
@@ -612,7 +641,11 @@ class DMD:
         DMD or DataFrame
             DMD object copy or filtered DataFrame depending on return_copy.
         """
+        if self.results is None:
+            raise ValueError("Must call DMD_win() before select_trials()")
+
         dmd_cp = cp.deepcopy(self)
+        assert dmd_cp.results is not None  # For mypy
         split = [dmd_cp.results[dmd_cp.results["trial"] == t] for t in selector]
 
         if not return_copy:
@@ -626,6 +659,9 @@ class DMD:
 
     def _scale_input(self) -> DMD:
         """Scale input data according to datascale setting."""
+        if self.X is None:
+            raise ValueError("Data (X) must be provided")
+
         datascale = self.info["datascale"]
         n_channels = self.info["n_chan"]
         n_trials = self.info["trials"]
@@ -672,6 +708,9 @@ class DMD:
         df_bands : DataFrame
             Filtered results.
         """
+        if self.results is None:
+            raise ValueError("Must call DMD_win() before accessing results")
+
         df = self.results
 
         if labels is None:
